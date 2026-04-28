@@ -11,6 +11,11 @@ public class IntegracaoArquivo extends RouteBuilder {
     public void configure() throws Exception {
         from("file:{{diretorioEntrada}}?delay=5000") // especificado no application.properties, o delay é o tempo de espera entre as verificações do diretório de entrada
                 .routeId("integracao-arquivo")           // define um ID para a rota, que pode ser usado para monitoramento e gerenciamento
+                .process(exchange -> {
+                    System.out.println(exchange.getMessage().getBody(String.class));
+                    // Aqui você pode adicionar lógica personalizada para processar o arquivo, se necessário
+                    // Por exemplo, ler o conteúdo do arquivo, validar dados, etc.
+                })
                 .log("Processando o arquivo: ${file:name}")  // loga o nome do arquivo que está sendo processado
                 .setHeader(FileConstants.FILE_NAME).simple("${date:now:HHmmss}_${file:name}") // renomeia o arquivo adicionando um timestamp ao nome original
                 .to("file:{{diretorioSaida}}");         // especificado no application.properties
